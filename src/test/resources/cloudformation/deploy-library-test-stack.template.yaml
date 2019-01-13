@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: This template is only for testing a stack deployment library.
+Parameters:
+  RepositoryName:
+    Default: default-test-repository-name
+    Description: The test repository name.
+    Type: String
+  PrincipalArn:
+    Description: The arn of the principal for the resource.
+    Type: String
+Resources:
+  DeployLibraryTestRepository:
+    Type: "AWS::ECR::Repository"
+    Properties:
+      RepositoryName: !Ref RepositoryName
+      RepositoryPolicyText:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Sid: AllowPushPull
+            Effect: Allow
+            Principal:
+              AWS:
+                - !Ref PrincipalArn
+            Action:
+              - "ecr:GetDownloadUrlForLayer"
+              - "ecr:BatchGetImage"
+              - "ecr:BatchCheckLayerAvailability"
+              - "ecr:PutImage"
+              - "ecr:InitiateLayerUpload"
+              - "ecr:UploadLayerPart"
+              - "ecr:CompleteLayerUpload"
