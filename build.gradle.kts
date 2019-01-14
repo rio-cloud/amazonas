@@ -7,7 +7,15 @@ val awsSdkVersion = "1.11.481"
 val junit5Version = "5.3.2"
 val log4jVersion = "2.11.0"
 
+val repositoryUser: String by project
+val repositoryPassword: String by project
+val repositoryUrl: String by project
+val releasePath: String by project
+val snapshotPath: String by project
+
 plugins {
+    java
+    maven
     kotlin("jvm") version "1.3.11"
 }
 
@@ -45,3 +53,56 @@ compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
 }
 
+val sourcesJar by tasks.registering(Jar::class) {
+    from(sourceSets.main.get().allSource)
+    classifier = "sources"
+}
+
+val javadocJar by tasks.registering(Jar::class) {
+    from(tasks.javadoc)
+    classifier = "javadoc"
+}
+
+tasks.named<Upload>("uploadArchives") {
+    repositories.withGroovyBuilder {
+        "mavenDeployer" {
+            "repository"("url" to repositoryUrl + releasePath) {
+                "authentication"("userName" to repositoryUser, "password" to repositoryPassword)
+            }
+
+            "snapshotRepository"("url" to repositoryUrl + snapshotPath) {
+                "authentication"("userName" to repositoryUser, "password" to repositoryPassword)
+            }
+
+            "pom"{
+                "project" {
+                    setProperty("name", "Amazonas")
+                    setProperty("description", "This library is intended to help developers with deployments to aws.")
+                    setProperty("url", "https://github.com/rio-cloud/amazonas")
+                    setProperty("packaging", "jar")
+
+                    "scm" {
+                        setProperty("connection", "scm:git:git://github.com/rio-cloud/amazonas.git")
+                        setProperty("developerConnection", "scm:git:git://github.com/rio-cloud/amazonas.git")
+                        setProperty("url", "https://github.com/rio-cloud/amazonas")
+                    }
+
+                    "licenses" {
+                        "license" {
+                            setProperty("name", "The Apache License, Version 2.0")
+                            setProperty("url", "http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        }
+                    }
+
+                    "developers" {
+                        "developer" {
+                            setProperty("id", "danielgoetz")
+                            setProperty("name", "Daniel Goetz")
+                            setProperty("email", "daniel.goetz@rio.cloud")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
