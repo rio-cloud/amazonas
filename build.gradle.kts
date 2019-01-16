@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-version = "0.0.1-SNAPSHOT"
+version = "0.0.2-SNAPSHOT"
 group = "cloud.rio"
 
 val awsSdkVersion = "1.11.481"
@@ -23,8 +23,11 @@ dependencies {
     compile(kotlin("stdlib-jdk8"))
     compile("org.apache.logging.log4j:log4j-core:$log4jVersion")
     compile("org.apache.logging.log4j:log4j-api:$log4jVersion")
+    compile("com.google.code.gson:gson:2.8.5")
     implementation("org.apache.commons:commons-io:1.3.2")
     implementation("com.amazonaws:aws-java-sdk-cloudformation:$awsSdkVersion")
+    implementation("com.amazonaws:aws-java-sdk-sts:$awsSdkVersion")
+    implementation("com.amazonaws:aws-java-sdk-s3:$awsSdkVersion")
 
     testCompile("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testCompile("org.junit.jupiter:junit-jupiter-params:$junit5Version")

@@ -54,7 +54,7 @@ class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFo
      * Instantiates an AmazonCloudformationClient with credentials and region. With an instance of the client you can
      * easily deploy your AWS CloudFormation stacks to the account specified in the credentials.
      *
-     * @param credentialsProvider an AWSCredentialsProvider, e.g. the MFACredentialsProvider
+     * @param credentialsProvider an AWSCredentialsProvider, e.g. the MfaCredentialsProvider
      * @param region              the AWS region that you want your stacks to be deployed to
      */
     constructor(credentialsProvider: AWSCredentialsProvider, region: String) : this(AmazonCloudFormationClientBuilder
