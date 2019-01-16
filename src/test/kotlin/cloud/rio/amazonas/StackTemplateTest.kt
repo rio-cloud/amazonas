@@ -111,4 +111,22 @@ class StackTemplateTest {
         assertTrue(listOf("test_server_arn_new", "5678").contains(stack.tags[1].value))
     }
 
+    @Test
+    fun `should have immutable tags`() {
+        val stack = StackTemplate(stackName, configFilePath)
+
+        stack.withTag("ServerCertificateArn", "test_server_arn_new")
+
+        assertEquals(0, stack.tags.size)
+    }
+
+    @Test
+    fun `should have immutable parameters`() {
+        val stack = StackTemplate(stackName, configFilePath)
+
+        stack.withParameter("ServerCertificateArn", "test_server_arn_new")
+
+        assertEquals(0, stack.parameters.size)
+    }
+
 }
