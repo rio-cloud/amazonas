@@ -18,58 +18,63 @@ package cloud.rio.amazonas
 import com.amazonaws.services.cloudformation.model.Parameter
 import com.amazonaws.services.cloudformation.model.Tag
 
-class StackTemplate(val name: String, val templatePath: String) {
-    internal val tags: MutableList<Tag> = ArrayList()
-    internal val parameters: MutableList<Parameter> = ArrayList()
+class StackTemplate(
+        val name: String,
+        val templatePath: String,
+        internal val parameters: List<Parameter>,
+        internal val tags: List<Tag>
+) {
+    
+    constructor(name: String, templatePath: String) : this(name, templatePath, listOf(), listOf())
 
     fun withParameter(parameterKey: String, parameterValue: String): StackTemplate {
-        addOrUpdateParameter(parameterKey, parameterValue)
-
-        return this
+        val updatedParametersList = createUpdatedParameterList(parameters, parameterKey, parameterValue)
+        return StackTemplate(name, templatePath, updatedParametersList, tags)
     }
 
     fun withParameters(parameterMap: Map<String, String>): StackTemplate {
+        var updatedParameterList = parameters
         parameterMap.forEach {
-            addOrUpdateParameter(it.key, it.value)
+            updatedParameterList = createUpdatedParameterList(updatedParameterList, it.key, it.value)
         }
-
-        return this
-    }
-
-    private fun addOrUpdateParameter(parameterKey: String, parameterValue: String) {
-        parameters.forEach {
-            if (it.parameterKey == parameterKey) {
-                it.parameterValue = parameterValue
-                return
-            }
-
-        }
-        this.parameters.add(Parameter().withParameterKey(parameterKey).withParameterValue(parameterValue))
+        return StackTemplate(name, templatePath, updatedParameterList, tags)
     }
 
     fun withTag(tagKey: String, tagValue: String): StackTemplate {
-        addOrUpdateTag(tagKey, tagValue)
-
-        return this
+        val updatedTagList = createUpdatedTagList(tags, tagKey, tagValue)
+        return StackTemplate(name, templatePath, parameters, updatedTagList)
     }
 
     fun withTags(tagMap: Map<String, String>): StackTemplate {
+        var updatedTagList = tags
         tagMap.forEach {
-            addOrUpdateTag(it.key, it.value)
+            updatedTagList = createUpdatedTagList(updatedTagList, it.key, it.value)
         }
-
-        return this
+        return StackTemplate(name, templatePath, parameters, updatedTagList)
     }
 
-    private fun addOrUpdateTag(tagKey: String, tagValue: String) {
-        tags.forEach {
-            if (it.key == tagKey) {
-                it.value = tagValue
-                return
+    companion object {
+        private fun createUpdatedParameterList(initialParameters: List<Parameter>, parameterKey: String, parameterValue: String): List<Parameter> {
+            val parameters = initialParameters.toMutableList()
+            parameters.forEach {
+                if (it.parameterKey == parameterKey) {
+                    it.parameterValue = parameterValue
+                    return parameters
+                }
             }
-
+            parameters.add(Parameter().withParameterKey(parameterKey).withParameterValue(parameterValue))
+            return parameters
         }
-        this.tags.add(Tag().withKey(tagKey).withValue(tagValue))
+        private fun createUpdatedTagList(initialTags: List<Tag>, tagKey: String, tagValue: String): List<Tag> {
+            val tags = initialTags.toMutableList()
+            tags.forEach {
+                if (it.key == tagKey) {
+                    it.value = tagValue
+                    return tags
+                }
+            }
+            tags.add(Tag().withKey(tagKey).withValue(tagValue))
+            return tags
+        }
     }
-
 }

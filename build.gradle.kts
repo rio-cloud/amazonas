@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-version = "0.0.2-SNAPSHOT"
+version = "0.0.3-SNAPSHOT"
 group = "cloud.rio"
 
 val awsSdkVersion = "1.11.481"
