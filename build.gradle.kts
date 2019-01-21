@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-version = "0.0.4-SNAPSHOT"
+version = "0.0.5-SNAPSHOT"
 group = "cloud.rio"
 
 val awsSdkVersion = "1.11.481"
@@ -26,6 +26,7 @@ dependencies {
     compile("com.google.code.gson:gson:2.8.5")
     implementation("org.apache.commons:commons-io:1.3.2")
     implementation("com.amazonaws:aws-java-sdk-cloudformation:$awsSdkVersion")
+    implementation("com.amazonaws:aws-java-sdk-codepipeline:$awsSdkVersion")
     implementation("com.amazonaws:aws-java-sdk-sts:$awsSdkVersion")
     implementation("com.amazonaws:aws-java-sdk-s3:$awsSdkVersion")
     implementation("com.amazonaws:aws-java-sdk-acm:$awsSdkVersion")
@@ -98,6 +99,7 @@ tasks.named<Upload>("uploadArchives") {
                         }
                     }
 
+                    
                     "developers" {
                         "developer" {
                             setProperty("id", "danielgoetz")
