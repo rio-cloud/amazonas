@@ -19,6 +19,7 @@ import com.amazonaws.auth.AWSCredentialsProvider
 import com.amazonaws.services.codepipeline.AWSCodePipeline
 import com.amazonaws.services.codepipeline.AWSCodePipelineClientBuilder
 import com.amazonaws.services.codepipeline.model.GetPipelineExecutionRequest
+import com.amazonaws.services.codepipeline.model.PipelineExecutionNotFoundException
 import com.amazonaws.services.codepipeline.model.StartPipelineExecutionRequest
 import org.apache.logging.log4j.LogManager
 
@@ -64,13 +65,22 @@ class CodePipelineRunner(
         return startPipelineExecutionResult.pipelineExecutionId
     }
 
-    private fun retrieveCurrentPipelineStatus(pipelineName: String, pipelineExecutionId: String): String {
-        val getPipelineExecutionResult = awsCodePipeline.getPipelineExecution(
-                GetPipelineExecutionRequest()
-                        .withPipelineName(pipelineName)
-                        .withPipelineExecutionId(pipelineExecutionId)
-        )
-        return getPipelineExecutionResult.pipelineExecution.status
+    private fun retrieveCurrentPipelineStatus(pipelineName: String, pipelineExecutionId: String, loopWait: Int): String {
+        val start = System.currentTimeMillis()
+        while (System.currentTimeMillis() < start + retrieveCurrentPipelineStatusTimeout * 1000) {
+            try {
+                Thread.sleep((loopWait * 1000).toLong())
+                val getPipelineExecutionResult = awsCodePipeline.getPipelineExecution(
+                        GetPipelineExecutionRequest()
+                                .withPipelineName(pipelineName)
+                                .withPipelineExecutionId(pipelineExecutionId)
+                )
+                return getPipelineExecutionResult.pipelineExecution.status
+            } catch (e: PipelineExecutionNotFoundException) {
+                LOGGER.info(e)
+            }
+        }
+        throw PipelineExecutionNotFoundException("Can't find execution id $pipelineExecutionId for pipeline $pipelineName after $retrieveCurrentPipelineStatusTimeout secs.")
     }
 
     private fun waitForFinalPipelineStatus(pipelineName: String, pipelineExecutionId: String, loopWait: Int): String {
@@ -79,8 +89,8 @@ class CodePipelineRunner(
         val start = System.currentTimeMillis()
 
         while (!pipelineFinished) {
-            if (System.currentTimeMillis() > start + waitingLoopTimeout * 1000) throw RuntimeException("Timeout")
-            val pipelineStatus = retrieveCurrentPipelineStatus(pipelineName, pipelineExecutionId)
+            if (System.currentTimeMillis() > start + waitForFinalPipelineStatusTimeout * 1000) throw RuntimeException("Timeout")
+            val pipelineStatus = retrieveCurrentPipelineStatus(pipelineName, pipelineExecutionId, loopWait)
             LOGGER.info("Current status of $pipelineName is $pipelineStatus")
             if (pipelineStatus != waitingPipelineStatus) {
                 pipelineFinished = true
@@ -90,8 +100,6 @@ class CodePipelineRunner(
             }
         }
         return finalPipelineStatus
-
-
     }
 
     companion object {
@@ -100,7 +108,8 @@ class CodePipelineRunner(
                 "Failed",
                 "Superseded"
         )
-        private const val waitingLoopTimeout = 10 * 60//sec
+        private const val waitForFinalPipelineStatusTimeout = 10 * 60//sec
+        private const val retrieveCurrentPipelineStatusTimeout = 1 * 60//sec
         private val LOGGER = LogManager.getLogger(AmazonCloudformationClient::class.java)
     }
 }

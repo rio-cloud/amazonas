@@ -16,10 +16,7 @@
 package cloud.rio.amazonas
 
 import com.amazonaws.services.codepipeline.AWSCodePipeline
-import com.amazonaws.services.codepipeline.model.GetPipelineExecutionRequest
-import com.amazonaws.services.codepipeline.model.GetPipelineExecutionResult
-import com.amazonaws.services.codepipeline.model.StartPipelineExecutionRequest
-import com.amazonaws.services.codepipeline.model.StartPipelineExecutionResult
+import com.amazonaws.services.codepipeline.model.*
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockkClass
@@ -45,7 +42,6 @@ internal class CodePipelineRunnerTest {
     fun prepareMocks() {
         every { awsCodePipelineMock.startPipelineExecution(StartPipelineExecutionRequest().withName(pipelineName)) } returns startPipelineExecutionResultMock
         every { startPipelineExecutionResultMock.pipelineExecutionId } returns pipelineExecutionId
-        every { awsCodePipelineMock.getPipelineExecution(GetPipelineExecutionRequest().withPipelineName(pipelineName).withPipelineExecutionId(pipelineExecutionId)) } returns getPipelineExecutionResultMock
     }
 
     @AfterEach
@@ -57,6 +53,7 @@ internal class CodePipelineRunnerTest {
     @Test
     fun `start a codepipeline, which runs successfully`() {
         every { getPipelineExecutionResultMock.pipelineExecution.status } returnsMany listOf(waitingStatus, successStatus)
+        every { awsCodePipelineMock.getPipelineExecution(GetPipelineExecutionRequest().withPipelineName(pipelineName).withPipelineExecutionId(pipelineExecutionId)) } returns getPipelineExecutionResultMock
 
         val codePipelineRunner = CodePipelineRunner(awsCodePipelineMock)
         codePipelineRunner.startPipelineAndWaitForSuccess(pipelineName, 1)
@@ -75,12 +72,34 @@ internal class CodePipelineRunnerTest {
     @Test
     fun `start a codepipeline, that does not run successfully and throw exception`() {
         every { getPipelineExecutionResultMock.pipelineExecution.status } returnsMany listOf(waitingStatus, failedStatus)
+        every { awsCodePipelineMock.getPipelineExecution(GetPipelineExecutionRequest().withPipelineName(pipelineName).withPipelineExecutionId(pipelineExecutionId)) } returns getPipelineExecutionResultMock
 
         val codePipelineRunner = CodePipelineRunner(awsCodePipelineMock)
         val codeToTest: () -> Unit = { codePipelineRunner.startPipelineAndWaitForSuccess(pipelineName, 1) }
 
         val exception = assertThrows(PipelineFailedException::class.java, codeToTest)
         assertEquals("Pipeline $pipelineName has final status $failedStatus", exception.message)
+        verify(exactly = 1) {
+            awsCodePipelineMock.startPipelineExecution(StartPipelineExecutionRequest()
+                    .withName(pipelineName))
+        }
+        verify(exactly = 2) {
+            awsCodePipelineMock.getPipelineExecution(GetPipelineExecutionRequest()
+                    .withPipelineName(pipelineName)
+                    .withPipelineExecutionId(pipelineExecutionId))
+        }
+    }
+
+    @Test
+    fun `start a codepipeline, that does need to retry due to not finding pipeline execution on first try`() {
+        every { getPipelineExecutionResultMock.pipelineExecution.status } returnsMany listOf(successStatus)
+        every {
+            awsCodePipelineMock.getPipelineExecution(GetPipelineExecutionRequest().withPipelineName(pipelineName).withPipelineExecutionId(pipelineExecutionId))
+        } throws PipelineExecutionNotFoundException("Pipeline Execution with id $pipelineExecutionId does not exist in pipeline with name $pipelineName") andThen getPipelineExecutionResultMock
+
+        val codePipelineRunner = CodePipelineRunner(awsCodePipelineMock)
+        codePipelineRunner.startPipelineAndWaitForSuccess(pipelineName, 1)
+
         verify(exactly = 1) {
             awsCodePipelineMock.startPipelineExecution(StartPipelineExecutionRequest()
                     .withName(pipelineName))
