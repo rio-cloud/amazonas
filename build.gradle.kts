@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-version = "0.0.5-SNAPSHOT"
+version = "0.0.6-SNAPSHOT"
 group = "cloud.rio"
 
 val awsSdkVersion = "1.11.481"
@@ -99,7 +99,7 @@ tasks.named<Upload>("uploadArchives") {
                         }
                     }
 
-                    
+
                     "developers" {
                         "developer" {
                             setProperty("id", "danielgoetz")
