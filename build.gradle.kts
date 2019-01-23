@@ -15,7 +15,7 @@ val snapshotPath: String by project
 
 plugins {
     java
-    maven
+    `maven-publish`
     kotlin("jvm") version "1.3.11"
 }
 
@@ -68,46 +68,46 @@ val javadocJar by tasks.registering(Jar::class) {
     classifier = "javadoc"
 }
 
-tasks.named<Upload>("uploadArchives") {
-    repositories.withGroovyBuilder {
-        "mavenDeployer" {
-            "repository"("url" to repositoryUrl + releasePath) {
-                "authentication"("userName" to repositoryUser, "password" to repositoryPassword)
-            }
-
-            "snapshotRepository"("url" to repositoryUrl + snapshotPath) {
-                "authentication"("userName" to repositoryUser, "password" to repositoryPassword)
-            }
-
-            "pom"{
-                "project" {
-                    setProperty("name", "Amazonas")
-                    setProperty("description", "This library is intended to help developers with deployments to aws.")
-                    setProperty("url", "https://github.com/rio-cloud/amazonas")
-                    setProperty("packaging", "jar")
-
-                    "scm" {
-                        setProperty("connection", "scm:git:git://github.com/rio-cloud/amazonas.git")
-                        setProperty("developerConnection", "scm:git:git://github.com/rio-cloud/amazonas.git")
-                        setProperty("url", "https://github.com/rio-cloud/amazonas")
-                    }
-
-                    "licenses" {
-                        "license" {
-                            setProperty("name", "The Apache License, Version 2.0")
-                            setProperty("url", "http://www.apache.org/licenses/LICENSE-2.0.txt")
-                        }
-                    }
-
-
-                    "developers" {
-                        "developer" {
-                            setProperty("id", "danielgoetz")
-                            setProperty("name", "Daniel Goetz")
-                            setProperty("email", "daniel.goetz@rio.cloud")
-                        }
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            artifactId = "amazonas"
+            from(components["java"])
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
+            pom {
+                name.set("Amazonas")
+                description.set("This library is intended to help developers with deployments to aws.")
+                url.set("https://github.com/rio-cloud/amazonas")
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
                     }
                 }
+                developers {
+                    developer {
+                        id.set("danielgoetz")
+                        name.set("Daniel Goetz")
+                        email.set("daniel.goetz@rio.cloud")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/rio-cloud/amazonas.git")
+                    developerConnection.set("scm:git:git://github.com/rio-cloud/amazonas.git")
+                    url.set("https://github.com/rio-cloud/amazonas")
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            val releasesRepoUrl = uri(repositoryUrl + releasePath)
+            val snapshotsRepoUrl = uri(repositoryUrl + snapshotPath)
+            url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
+            credentials {
+                username = repositoryUser
+                password = repositoryPassword
             }
         }
     }
