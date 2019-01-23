@@ -2,16 +2,15 @@ package cloud.rio.amazonas
 
 import com.amazonaws.auth.AWSCredentialsProvider
 import org.apache.commons.codec.binary.Base64
-import java.io.UnsupportedEncodingException
 import com.amazonaws.services.ecr.AmazonECR
 import com.amazonaws.services.ecr.AmazonECRClientBuilder
 import com.amazonaws.services.ecr.model.GetAuthorizationTokenRequest
 import java.nio.charset.Charset
 
 
-class DockerCredentials (
-    internal var username: String,
-    internal var password: String
+data class DockerCredentials(
+        val username: String,
+        val password: String
 )
 
 class EcrAuthorizationHelper(private val amazonECR: AmazonECR) {
