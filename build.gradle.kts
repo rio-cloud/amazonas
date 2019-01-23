@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-version = "0.0.6-SNAPSHOT"
+version = "0.0.7-SNAPSHOT"
 group = "cloud.rio"
 
 val awsSdkVersion = "1.11.481"
@@ -31,6 +31,7 @@ dependencies {
     implementation("com.amazonaws:aws-java-sdk-s3:$awsSdkVersion")
     implementation("com.amazonaws:aws-java-sdk-acm:$awsSdkVersion")
     implementation("com.amazonaws:aws-java-sdk-route53:$awsSdkVersion")
+    implementation("com.amazonaws:aws-java-sdk-ecr:$awsSdkVersion")
     testCompile("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testCompile("org.junit.jupiter:junit-jupiter-params:$junit5Version")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
