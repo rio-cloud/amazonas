@@ -206,7 +206,7 @@ class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFo
 
     private fun loadFile(templatePath: String): String {
         try {
-            return FileUtils.readFileToString(File(System.getProperty("user.dir") + "/$templatePath"))
+            return FileUtils.readFileToString(File(templatePath))
         } catch (e: IOException) {
             throw RuntimeException("Could not read TemplateFile.", e)
         }
