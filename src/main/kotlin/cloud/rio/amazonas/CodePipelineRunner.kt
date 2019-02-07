@@ -110,7 +110,7 @@ class CodePipelineRunner(
         )
         private const val waitForFinalPipelineStatusTimeout = 10 * 60//sec
         private const val retrieveCurrentPipelineStatusTimeout = 1 * 60//sec
-        private val LOGGER = LogManager.getLogger(AmazonCloudformationClient::class.java)
+        private val LOGGER = LogManager.getLogger(CodePipelineRunner::class.java)
     }
 }
 
