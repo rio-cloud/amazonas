@@ -18,20 +18,35 @@ package cloud.rio.amazonas
 import com.amazonaws.services.cloudformation.model.Parameter
 import com.amazonaws.services.cloudformation.model.Tag
 
-class StackTemplate(
-        val name: String,
-        val templatePath: String,
-        internal val parameters: List<Parameter>,
-        internal val tags: List<Tag>
-) {
-    
-    constructor(name: String, templatePath: String) : this(name, templatePath, listOf(), listOf())
+class StackTemplate(val name: String, val templatePath: String) {
+    private val _parameters = mutableMapOf<String, String>()
+    private val _tags = mutableMapOf<String, String>()
 
+    val parameters
+        get() = _parameters.map { Parameter().withParameterKey(it.key).withParameterValue(it.value) }.toList()
+    val tags
+        get() = _tags.map { Tag().withKey(it.key).withValue(it.value) }.toList()
+
+    fun parameters(function: MutableMap<String, String>.() -> Unit) {
+        _parameters.function()
+    }
+    fun tags(function: MutableMap<String, String>.() -> Unit) {
+        _tags.function()
+    }
+
+    @Deprecated("Use builder instead")
+    constructor(name: String, templatePath: String, parameters: List<Parameter>, tags: List<Tag>) : this(name, templatePath) {
+        this._parameters.putAll(parameters.map { Pair(it.parameterKey, it.parameterValue) })
+        this._tags.putAll(tags.map { Pair(it.key, it.value) })
+    }
+
+    @Deprecated("Use builder instead")
     fun withParameter(parameterKey: String, parameterValue: String): StackTemplate {
         val updatedParametersList = createUpdatedParameterList(parameters, parameterKey, parameterValue)
         return StackTemplate(name, templatePath, updatedParametersList, tags)
     }
 
+    @Deprecated("Use builder instead")
     fun withParameters(parameterMap: Map<String, String>): StackTemplate {
         var updatedParameterList = parameters
         parameterMap.forEach {
@@ -40,11 +55,13 @@ class StackTemplate(
         return StackTemplate(name, templatePath, updatedParameterList, tags)
     }
 
+    @Deprecated("Use builder instead")
     fun withTag(tagKey: String, tagValue: String): StackTemplate {
         val updatedTagList = createUpdatedTagList(tags, tagKey, tagValue)
         return StackTemplate(name, templatePath, parameters, updatedTagList)
     }
 
+    @Deprecated("Use builder instead")
     fun withTags(tagMap: Map<String, String>): StackTemplate {
         var updatedTagList = tags
         tagMap.forEach {
@@ -77,4 +94,10 @@ class StackTemplate(
             return tags
         }
     }
+}
+
+fun stack(stackName: String, templatePath: String, function: StackTemplate.() -> Unit = {}): StackTemplate {
+    val stack = StackTemplate(stackName, templatePath)
+    stack.function()
+    return stack
 }
