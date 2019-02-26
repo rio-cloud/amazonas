@@ -31,7 +31,7 @@ class StackBuilderTest {
 
     @Test
     fun `should be created without parameters or tags`() {
-        val stack = stack(stackName, configFilePath)
+        val stack = StackTemplate(stackName, configFilePath)
 
         assertEquals(stackName, stack.name)
         assertEquals(configFilePath, stack.templatePath)
@@ -41,7 +41,7 @@ class StackBuilderTest {
 
     @Test
     fun `should be created with one parameter`() {
-        val stack = stack(stackName, configFilePath) {
+        val stack = StackTemplate(stackName, configFilePath).apply {
             parameters {
                 put("ServerCertificateArn", "test_server_arn_new")
             }
@@ -55,7 +55,7 @@ class StackBuilderTest {
     @Test
     fun `should be created with a map of parameters`() {
         val parameterMap = mapOf("ServerCertificateArn" to "test_server_arn_new", "AccountId" to "29741983098")
-        val stack = stack(stackName, configFilePath) {
+        val stack = StackTemplate(stackName, configFilePath).apply {
             parameters {
                 putAll(parameterMap)
             }
@@ -71,7 +71,7 @@ class StackBuilderTest {
     @Test
     fun `should have each parameter only once`() {
         val parameterMap = mapOf("ServerCertificateArn" to "test_server_arn_new", "AccountId" to "29741983098")
-        val stack = stack(stackName, configFilePath) {
+        val stack = StackTemplate(stackName, configFilePath).apply {
             parameters {
                 putAll(parameterMap)
                 put("AccountId", "1234")
@@ -88,7 +88,7 @@ class StackBuilderTest {
 
     @Test
     fun `should be created with one tag`() {
-        val stack = stack(stackName, configFilePath) {
+        val stack = StackTemplate(stackName, configFilePath).apply {
             tags {
                 put("ServerCertificateArn", "test_server_arn_new")
             }
@@ -101,7 +101,7 @@ class StackBuilderTest {
     @Test
     fun `should be created with a map of tags`() {
         val tagMap = mapOf("ServerCertificateArn" to "test_server_arn_new", "AccountId" to "29741983098")
-        val stack = stack(stackName, configFilePath){
+        val stack = StackTemplate(stackName, configFilePath).apply {
             tags {
                 putAll(tagMap)
             }
@@ -117,7 +117,7 @@ class StackBuilderTest {
     @Test
     fun `should have each tag only once`() {
         val tagMap = mapOf("ServerCertificateArn" to "test_server_arn_new", "AccountId" to "29741983098")
-        val stack = stack(stackName, configFilePath) {
+        val stack = StackTemplate(stackName, configFilePath).apply {
             tags {
                 putAll(tagMap)
                 put("AccountId", "1234")
