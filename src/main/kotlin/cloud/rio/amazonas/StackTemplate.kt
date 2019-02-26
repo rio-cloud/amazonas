@@ -95,9 +95,3 @@ class StackTemplate(val name: String, val templatePath: String) {
         }
     }
 }
-
-fun stack(stackName: String, templatePath: String, function: StackTemplate.() -> Unit = {}): StackTemplate {
-    val stack = StackTemplate(stackName, templatePath)
-    stack.function()
-    return stack
-}
