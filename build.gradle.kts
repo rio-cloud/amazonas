@@ -15,6 +15,7 @@ val snapshotPath: String by project
 
 plugins {
     java
+    signing
     `maven-publish`
     kotlin("jvm") version "1.3.11"
 }
@@ -112,5 +113,11 @@ publishing {
                 password = repositoryPassword
             }
         }
+    }
+}
+
+signing {
+    if (project.hasProperty("signing.keyId") && project.hasProperty("signing.password") && project.hasProperty("signing.secretKeyRingFile")) {
+        sign(publishing.publications["mavenJava"])
     }
 }
