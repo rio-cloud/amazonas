@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/rio-cloud/amazonas.svg?branch=master)](https://travis-ci.com/rio-cloud/amazonas)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # Amazonas
@@ -13,18 +14,19 @@ You should include the following dependency into your build.gradle.kts file:
 
 ```kotlin
 buildscript {
-    val amazonasVersion by extra { "0.0.5-SNAPSHOT" }
     repositories {
-        mavenLocal()
+        maven {
+            url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+        }
     }
     dependencies {
-        classpath("cloud.rio:amazonas:$amazonasVersion")
+        classpath("cloud.rio:amazonas:0.0.12-SNAPSHOT")
     }
 }
 ```
 
-NOTE: The library is not, yet available on any public repository.
-Therefore you have to build and publish it to your own maven repository in order to use it.
+NOTE: The library is not yet available on maven central.
+Therefore you have to add the Sonatype snapshots repository if you want to use a snapshot version.
 
 ### How to use the MFA Credentials Provider
 
