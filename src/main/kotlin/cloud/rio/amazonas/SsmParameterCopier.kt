@@ -1,3 +1,18 @@
+/*
+ * Copyright 2019 TB Digital Services GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package cloud.rio.amazonas
 
 import com.amazonaws.auth.AWSCredentialsProvider
@@ -6,13 +21,14 @@ import com.amazonaws.services.kms.AWSKMSClientBuilder
 import com.amazonaws.services.kms.model.ListAliasesRequest
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagement
 import com.amazonaws.services.simplesystemsmanagement.AWSSimpleSystemsManagementClientBuilder
-import com.amazonaws.services.simplesystemsmanagement.model.*
+import com.amazonaws.services.simplesystemsmanagement.model.GetParameterRequest
+import com.amazonaws.services.simplesystemsmanagement.model.PutParameterRequest
 import org.apache.logging.log4j.LogManager
 
 class SsmParameterCopier(
-    private val sourceSsm: AWSSimpleSystemsManagement,
-    private val targetSsm: AWSSimpleSystemsManagement,
-    private val kmsClient: AWSKMS
+        private val sourceSsm: AWSSimpleSystemsManagement,
+        private val targetSsm: AWSSimpleSystemsManagement,
+        private val kmsClient: AWSKMS
 ) {
     constructor(sourceCredentialsProvider: AWSCredentialsProvider, targetCredentialsProvider: AWSCredentialsProvider, region: String) :
             this(
@@ -33,7 +49,7 @@ class SsmParameterCopier(
         val parameter = getParameterResult.parameter
         LOGGER.info("Successfully read parameter \"{}\".", sourceName)
 
-        val request = if(encryptionKeyName != "aws/kms") {
+        val request = if (encryptionKeyName != "aws/kms") {
             PutParameterRequest()
                     .withName(targetName)
                     .withValue(parameter.value)
@@ -49,7 +65,7 @@ class SsmParameterCopier(
         }
 
         val putParameterResult = targetSsm.putParameter(request)
-        LOGGER.info("Successfully set version {} of parameter \"{}\".", putParameterResult.getVersion(), targetName)
+        LOGGER.info("Successfully set version {} of parameter \"{}\".", putParameterResult.version, targetName)
     }
 
     private fun getKeyId(keyName: String?): String? {
@@ -87,7 +103,6 @@ class SsmParameterCopier(
         private const val OVERWRITE = true
         private const val WITH_DECRYPTION = true
     }
-
 }
 
 class NoEncryptionKeyFoundException internal constructor(message: String) : RuntimeException(message)

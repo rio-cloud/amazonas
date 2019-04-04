@@ -23,9 +23,7 @@ import com.amazonaws.services.codepipeline.model.PipelineExecutionNotFoundExcept
 import com.amazonaws.services.codepipeline.model.StartPipelineExecutionRequest
 import org.apache.logging.log4j.LogManager
 
-class CodePipelineRunner(
-        private val awsCodePipeline: AWSCodePipeline
-) {
+class CodePipelineRunner(private val awsCodePipeline: AWSCodePipeline) {
     /**
      * Instantiates an AWSCodepipelineClient with credentials and region. With an instance of the client you start a
      * codepipeline and in case of a failure of this pipeline, the instance will throw an exception.
@@ -33,11 +31,14 @@ class CodePipelineRunner(
      * @param credentialsProvider an AWSCredentialsProvider, e.g. the MfaCredentialsProvider
      * @param region              the AWS region that you want your stacks to be deployed to
      */
-    constructor(credentialsProvider: AWSCredentialsProvider, region: String) : this(AWSCodePipelineClientBuilder
-            .standard()
-            .withRegion(region)
-            .withCredentials(credentialsProvider)
-            .build())
+    constructor(credentialsProvider: AWSCredentialsProvider, region: String) :
+            this(
+                    AWSCodePipelineClientBuilder
+                            .standard()
+                            .withRegion(region)
+                            .withCredentials(credentialsProvider)
+                            .build()
+            )
 
     /**
      * Starts the specified pipeline, waits until it has reached its final status. In case this is a failed status,

@@ -37,7 +37,6 @@
  */
 package cloud.rio.amazonas
 
-
 import com.amazonaws.AmazonServiceException
 import com.amazonaws.auth.AWSCredentialsProvider
 import com.amazonaws.services.cloudformation.AmazonCloudFormation
@@ -49,7 +48,6 @@ import java.io.File
 import java.io.IOException
 
 class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFormation) {
-
     /**
      * Instantiates an AmazonCloudformationClient with credentials and region. With an instance of the client you can
      * easily deploy your AWS CloudFormation stacks to the account specified in the credentials.
@@ -57,11 +55,14 @@ class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFo
      * @param credentialsProvider an AWSCredentialsProvider, e.g. the MfaCredentialsProvider
      * @param region              the AWS region that you want your stacks to be deployed to
      */
-    constructor(credentialsProvider: AWSCredentialsProvider, region: String) : this(AmazonCloudFormationClientBuilder
-            .standard()
-            .withRegion(region)
-            .withCredentials(credentialsProvider)
-            .build())
+    constructor(credentialsProvider: AWSCredentialsProvider, region: String) :
+            this(
+                    AmazonCloudFormationClientBuilder
+                            .standard()
+                            .withRegion(region)
+                            .withCredentials(credentialsProvider)
+                            .build()
+            )
 
     /**
      * Creates or updates the specified CloudFormation stackTemplate and waits for completion.
@@ -151,7 +152,6 @@ class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFo
         return amazonCloudFormation.updateStack(updateStackRequest)
     }
 
-
     private fun createStack(stackTemplate: StackTemplate, capability: String, onCreationFailure: String): CreateStackResult {
         val createStackRequest = CreateStackRequest()
                 .withStackName(stackTemplate.name)
@@ -226,7 +226,6 @@ class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFo
     }
 
     companion object {
-
         private val successStackStatuses = listOf(
                 "CREATE_COMPLETE",
                 "UPDATE_COMPLETE",

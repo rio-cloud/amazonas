@@ -27,7 +27,7 @@ import java.io.File
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("HttpToS3Loader.loadIfNotPresent")
-class HttpToS3LoaderTest {
+internal class HttpToS3LoaderTest {
     private val md5 = "d8e8fca2dc0f896fd7cb4cb0031ba249"
     private val bucket = "test-bucket"
     private val key = "prefix/key"

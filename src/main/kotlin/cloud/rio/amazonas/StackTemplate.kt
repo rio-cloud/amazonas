@@ -30,12 +30,14 @@ class StackTemplate(val name: String, val templatePath: String) {
     fun parameters(function: MutableMap<String, String>.() -> Unit) {
         _parameters.function()
     }
+
     fun tags(function: MutableMap<String, String>.() -> Unit) {
         _tags.function()
     }
 
     @Deprecated("Use primary constructor and apply method instead")
-    constructor(name: String, templatePath: String, parameters: List<Parameter>, tags: List<Tag>) : this(name, templatePath) {
+    constructor(name: String, templatePath: String, parameters: List<Parameter>, tags: List<Tag>) :
+            this(name, templatePath) {
         this._parameters.putAll(parameters.map { Pair(it.parameterKey, it.parameterValue) })
         this._tags.putAll(tags.map { Pair(it.key, it.value) })
     }
@@ -82,6 +84,7 @@ class StackTemplate(val name: String, val templatePath: String) {
             parameters.add(Parameter().withParameterKey(parameterKey).withParameterValue(parameterValue))
             return parameters
         }
+
         private fun createUpdatedTagList(initialTags: List<Tag>, tagKey: String, tagValue: String): List<Tag> {
             val tags = initialTags.toMutableList()
             tags.forEach {

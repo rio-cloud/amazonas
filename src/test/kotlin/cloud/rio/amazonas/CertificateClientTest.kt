@@ -21,7 +21,10 @@ import com.amazonaws.services.route53.AmazonRoute53
 import com.amazonaws.services.route53.model.ChangeResourceRecordSetsResult
 import com.amazonaws.services.route53.model.HostedZone
 import com.amazonaws.services.route53.model.ListHostedZonesResult
-import io.mockk.*
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.mockkClass
+import io.mockk.verify
 import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.assertEquals
 
