@@ -1,6 +1,7 @@
 .gradle
 /build/
 /out/
+secring.gpg
 
 # Ignore Gradle GUI config
 gradle-app.setting

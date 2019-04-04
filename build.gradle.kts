@@ -15,6 +15,7 @@ val snapshotPath: String by project
 
 plugins {
     java
+    signing
     `maven-publish`
     kotlin("jvm") version "1.3.11"
 }
@@ -33,6 +34,7 @@ dependencies {
     implementation("com.amazonaws:aws-java-sdk-route53:$awsSdkVersion")
     implementation("com.amazonaws:aws-java-sdk-ecr:$awsSdkVersion")
     implementation("com.amazonaws:aws-java-sdk-ssm:$awsSdkVersion")
+    testCompile("io.findify:s3mock_2.12:0.2.5")
     testCompile("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testCompile("org.junit.jupiter:junit-jupiter-params:$junit5Version")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
@@ -112,5 +114,11 @@ publishing {
                 password = repositoryPassword
             }
         }
+    }
+}
+
+signing {
+    if (project.hasProperty("signing.keyId") && project.hasProperty("signing.password") && project.hasProperty("signing.secretKeyRingFile")) {
+        sign(publishing.publications["mavenJava"])
     }
 }
