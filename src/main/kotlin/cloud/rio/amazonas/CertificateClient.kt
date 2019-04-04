@@ -51,7 +51,7 @@ class CertificateClient(
         do {
             listCertificatesResult = acmClient.listCertificates(ListCertificatesRequest().withNextToken(listCertificatesResult?.nextToken))
             val existingCertificate = listCertificatesResult.certificateSummaryList
-                    .firstOrNull { it -> it.domainName == (domainName) }
+                    .firstOrNull { it.domainName == (domainName) }
             if (existingCertificate != null) return existingCertificate.certificateArn
         } while (listCertificatesResult?.nextToken != null)
         return null
@@ -110,7 +110,7 @@ class CertificateClient(
         do {
             listHostedZonesResult = route53Client.listHostedZones(ListHostedZonesRequest().withMarker(listHostedZonesResult?.marker))
             val hostedZone = listHostedZonesResult.hostedZones
-                    .firstOrNull { it -> it.name == ("$hostedZoneName.") }
+                    .firstOrNull { it.name == ("$hostedZoneName.") }
             if (hostedZone != null) return hostedZone.id
         } while (listHostedZonesResult?.marker != null)
         return null

@@ -28,11 +28,14 @@ import java.nio.channels.Channels
 
 class HttpToS3Loader(private val client: AmazonS3) {
 
-    constructor(credentialsProvider: AWSCredentialsProvider, region: String) : this(AmazonS3ClientBuilder
-            .standard()
-            .withRegion(region)
-            .withCredentials(credentialsProvider)
-            .build())
+    constructor(credentialsProvider: AWSCredentialsProvider, region: String) :
+            this(
+                    AmazonS3ClientBuilder
+                            .standard()
+                            .withRegion(region)
+                            .withCredentials(credentialsProvider)
+                            .build()
+            )
 
     fun loadIfNotPresent(url: String, md5: String, bucket: String, key: String) {
         if (isTargetPresent(md5, bucket, key)) {

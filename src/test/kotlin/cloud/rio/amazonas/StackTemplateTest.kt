@@ -24,7 +24,7 @@ import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("A StackTemplate")
-class StackTemplateTest {
+internal class StackTemplateTest {
 
     private val configFilePath = "src/test/resources/cloudformation/deploy-library-test-stack.template.yaml"
     private val stackName = "TestStack"
@@ -93,6 +93,7 @@ class StackTemplateTest {
                 put("ServerCertificateArn", "test_server_arn_new")
             }
         }
+
         assertEquals(1, stack.tags.size)
         assertEquals("ServerCertificateArn", stack.tags[0].key)
         assertEquals("test_server_arn_new", stack.tags[0].value)

@@ -24,7 +24,7 @@ import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("A StackTemplate")
-class StackTemplateDeprecatedTest {
+internal class StackTemplateDeprecatedTest {
 
     private val configFilePath = "src/test/resources/cloudformation/deploy-library-test-stack.template.yaml"
     private val stackName = "TestStack"
