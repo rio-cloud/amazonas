@@ -34,19 +34,19 @@ class StackTemplate(val name: String, val templatePath: String) {
         _tags.function()
     }
 
-    @Deprecated("Use builder instead")
+    @Deprecated("Use primary constructor and apply method instead")
     constructor(name: String, templatePath: String, parameters: List<Parameter>, tags: List<Tag>) : this(name, templatePath) {
         this._parameters.putAll(parameters.map { Pair(it.parameterKey, it.parameterValue) })
         this._tags.putAll(tags.map { Pair(it.key, it.value) })
     }
 
-    @Deprecated("Use builder instead")
+    @Deprecated("Use apply method instead")
     fun withParameter(parameterKey: String, parameterValue: String): StackTemplate {
         val updatedParametersList = createUpdatedParameterList(parameters, parameterKey, parameterValue)
         return StackTemplate(name, templatePath, updatedParametersList, tags)
     }
 
-    @Deprecated("Use builder instead")
+    @Deprecated("Use apply method instead")
     fun withParameters(parameterMap: Map<String, String>): StackTemplate {
         var updatedParameterList = parameters
         parameterMap.forEach {
@@ -55,13 +55,13 @@ class StackTemplate(val name: String, val templatePath: String) {
         return StackTemplate(name, templatePath, updatedParameterList, tags)
     }
 
-    @Deprecated("Use builder instead")
+    @Deprecated("Use apply method instead")
     fun withTag(tagKey: String, tagValue: String): StackTemplate {
         val updatedTagList = createUpdatedTagList(tags, tagKey, tagValue)
         return StackTemplate(name, templatePath, parameters, updatedTagList)
     }
 
-    @Deprecated("Use builder instead")
+    @Deprecated("Use apply method instead")
     fun withTags(tagMap: Map<String, String>): StackTemplate {
         var updatedTagList = tags
         tagMap.forEach {

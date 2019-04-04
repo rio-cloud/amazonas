@@ -24,7 +24,7 @@ import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("A StackTemplate")
-class StackBuilderTest {
+class StackTemplateDeprecatedTest {
 
     private val configFilePath = "src/test/resources/cloudformation/deploy-library-test-stack.template.yaml"
     private val stackName = "TestStack"
@@ -41,11 +41,7 @@ class StackBuilderTest {
 
     @Test
     fun `should be created with one parameter`() {
-        val stack = StackTemplate(stackName, configFilePath).apply {
-            parameters {
-                put("ServerCertificateArn", "test_server_arn_new")
-            }
-        }
+        val stack = StackTemplate(stackName, configFilePath).withParameter("ServerCertificateArn", "test_server_arn_new")
 
         assertEquals(1, stack.parameters.size)
         assertEquals("ServerCertificateArn", stack.parameters[0].parameterKey)
@@ -55,11 +51,7 @@ class StackBuilderTest {
     @Test
     fun `should be created with a map of parameters`() {
         val parameterMap = mapOf("ServerCertificateArn" to "test_server_arn_new", "AccountId" to "29741983098")
-        val stack = StackTemplate(stackName, configFilePath).apply {
-            parameters {
-                putAll(parameterMap)
-            }
-        }
+        val stack = StackTemplate(stackName, configFilePath).withParameters(parameterMap)
 
         assertEquals(2, stack.parameters.size)
         assertTrue(listOf("ServerCertificateArn", "AccountId").contains(stack.parameters[0].parameterKey))
@@ -71,13 +63,10 @@ class StackBuilderTest {
     @Test
     fun `should have each parameter only once`() {
         val parameterMap = mapOf("ServerCertificateArn" to "test_server_arn_new", "AccountId" to "29741983098")
-        val stack = StackTemplate(stackName, configFilePath).apply {
-            parameters {
-                putAll(parameterMap)
-                put("AccountId", "1234")
-                put("AccountId", "5678")
-            }
-        }
+        val stack = StackTemplate(stackName, configFilePath)
+                .withParameters(parameterMap)
+                .withParameter("AccountId", "1234")
+                .withParameter("AccountId", "5678")
 
         assertEquals(2, stack.parameters.size)
         assertTrue(listOf("ServerCertificateArn", "AccountId").contains(stack.parameters[0].parameterKey))
@@ -88,11 +77,8 @@ class StackBuilderTest {
 
     @Test
     fun `should be created with one tag`() {
-        val stack = StackTemplate(stackName, configFilePath).apply {
-            tags {
-                put("ServerCertificateArn", "test_server_arn_new")
-            }
-        }
+        val stack = StackTemplate(stackName, configFilePath).withTag("ServerCertificateArn", "test_server_arn_new")
+
         assertEquals(1, stack.tags.size)
         assertEquals("ServerCertificateArn", stack.tags[0].key)
         assertEquals("test_server_arn_new", stack.tags[0].value)
@@ -101,11 +87,7 @@ class StackBuilderTest {
     @Test
     fun `should be created with a map of tags`() {
         val tagMap = mapOf("ServerCertificateArn" to "test_server_arn_new", "AccountId" to "29741983098")
-        val stack = StackTemplate(stackName, configFilePath).apply {
-            tags {
-                putAll(tagMap)
-            }
-        }
+        val stack = StackTemplate(stackName, configFilePath).withTags(tagMap)
 
         assertEquals(2, stack.tags.size)
         assertTrue(listOf("ServerCertificateArn", "AccountId").contains(stack.tags[0].key))
@@ -117,13 +99,10 @@ class StackBuilderTest {
     @Test
     fun `should have each tag only once`() {
         val tagMap = mapOf("ServerCertificateArn" to "test_server_arn_new", "AccountId" to "29741983098")
-        val stack = StackTemplate(stackName, configFilePath).apply {
-            tags {
-                putAll(tagMap)
-                put("AccountId", "1234")
-                put("AccountId", "5678")
-            }
-        }
+        val stack = StackTemplate(stackName, configFilePath)
+                .withTags(tagMap)
+                .withTag("AccountId", "1234")
+                .withTag("AccountId", "5678")
 
         assertEquals(2, stack.tags.size)
         assertTrue(listOf("ServerCertificateArn", "AccountId").contains(stack.tags[0].key))
@@ -131,4 +110,23 @@ class StackBuilderTest {
         assertTrue(listOf("test_server_arn_new", "5678").contains(stack.tags[0].value))
         assertTrue(listOf("test_server_arn_new", "5678").contains(stack.tags[1].value))
     }
+
+    @Test
+    fun `should have immutable tags`() {
+        val stack = StackTemplate(stackName, configFilePath)
+
+        stack.withTag("ServerCertificateArn", "test_server_arn_new")
+
+        assertEquals(0, stack.tags.size)
+    }
+
+    @Test
+    fun `should have immutable parameters`() {
+        val stack = StackTemplate(stackName, configFilePath)
+
+        stack.withParameter("ServerCertificateArn", "test_server_arn_new")
+
+        assertEquals(0, stack.parameters.size)
+    }
+
 }
