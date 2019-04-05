@@ -100,6 +100,11 @@ publishing {
                         name.set("Tom Zirke")
                         email.set("tom.zirke@tngtech.com")
                     }
+                    developer {
+                        id.set("christianhagel")
+                        name.set("Christian Hagel")
+                        email.set("christian.hagel@rio.cloud")
+                    }
                 }
                 scm {
                     connection.set("scm:git:git://github.com/rio-cloud/amazonas.git")
