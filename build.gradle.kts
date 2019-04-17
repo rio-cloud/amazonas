@@ -1,11 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-version = "0.0.12-SNAPSHOT"
+version = "0.0.13-SNAPSHOT"
 group = "cloud.rio"
 
-val awsSdkVersion = "1.11.481"
-val junit5Version = "5.3.2"
-val log4jVersion = "2.11.0"
+val awsSdkVersion = "1.11.536"
+val junit5Version = "5.4.2"
+val log4jVersion = "2.11.2"
+val jacksonVersion = "2.9.8"
 
 val repositoryUser: String by project
 val repositoryPassword: String by project
@@ -17,7 +18,7 @@ plugins {
     java
     signing
     `maven-publish`
-    kotlin("jvm") version "1.3.11"
+    kotlin("jvm") version "1.3.30"
 }
 
 dependencies {
@@ -34,19 +35,21 @@ dependencies {
     implementation("com.amazonaws:aws-java-sdk-route53:$awsSdkVersion")
     implementation("com.amazonaws:aws-java-sdk-ecr:$awsSdkVersion")
     implementation("com.amazonaws:aws-java-sdk-ssm:$awsSdkVersion")
+    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     testCompile("io.findify:s3mock_2.12:0.2.5")
     testCompile("org.junit.jupiter:junit-jupiter-api:$junit5Version")
     testCompile("org.junit.jupiter:junit-jupiter-params:$junit5Version")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
-    testRuntime("org.junit.platform:junit-platform-launcher:1.3.2")
-    testImplementation("io.mockk:mockk:1.8.13.kotlin13")
+    testRuntime("org.junit.platform:junit-platform-launcher:1.4.2")
+    testImplementation("io.mockk:mockk:1.9.3")
 }
 
 repositories {
     mavenCentral()
 }
 
-tasks.getByName<Wrapper>("wrapper").gradleVersion = "5.1"
+tasks.getByName<Wrapper>("wrapper").gradleVersion = "5.4"
 
 tasks.withType<Test> {
     useJUnitPlatform()
