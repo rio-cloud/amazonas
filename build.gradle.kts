@@ -4,7 +4,6 @@ version = "0.1.0-SNAPSHOT"
 group = "cloud.rio"
 
 val awsSdkVersion = "1.11.536"
-val junit5Version = "5.4.2"
 val log4jVersion = "2.11.2"
 val jacksonVersion = "2.9.8"
 
@@ -39,10 +38,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     testImplementation("io.mockk:mockk:1.9.3")
     testImplementation("io.findify:s3mock_2.12:0.2.5")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:$junit5Version")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
-    testRuntime("org.junit.platform:junit-platform-launcher:1.4.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
 }
 
 repositories {
