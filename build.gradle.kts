@@ -105,6 +105,11 @@ publishing {
                         name.set("Christian Hagel")
                         email.set("christian.hagel@rio.cloud")
                     }
+                    developer {
+                        id.set("antoniocastillo")
+                        name.set("Antonio Castillo")
+                        email.set("antonio.castillo@rio.cloud")
+                    }
                 }
                 scm {
                     connection.set("scm:git:git://github.com/rio-cloud/amazonas.git")
