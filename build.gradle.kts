@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-version = "0.0.13-SNAPSHOT"
+version = "0.1.0-SNAPSHOT"
 group = "cloud.rio"
 
 val awsSdkVersion = "1.11.536"
@@ -22,10 +22,10 @@ plugins {
 }
 
 dependencies {
-    compile(kotlin("stdlib-jdk8"))
-    compile("org.apache.logging.log4j:log4j-core:$log4jVersion")
-    compile("org.apache.logging.log4j:log4j-api:$log4jVersion")
-    compile("com.google.code.gson:gson:2.8.5")
+    implementation(kotlin("stdlib-jdk8"))
+    implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
+    implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
+    implementation("com.google.code.gson:gson:2.8.5")
     implementation("org.apache.commons:commons-io:1.3.2")
     implementation("com.amazonaws:aws-java-sdk-cloudformation:$awsSdkVersion")
     implementation("com.amazonaws:aws-java-sdk-codepipeline:$awsSdkVersion")
@@ -37,12 +37,12 @@ dependencies {
     implementation("com.amazonaws:aws-java-sdk-ssm:$awsSdkVersion")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    testCompile("io.findify:s3mock_2.12:0.2.5")
-    testCompile("org.junit.jupiter:junit-jupiter-api:$junit5Version")
-    testCompile("org.junit.jupiter:junit-jupiter-params:$junit5Version")
+    testImplementation("io.mockk:mockk:1.9.3")
+    testImplementation("io.findify:s3mock_2.12:0.2.5")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junit5Version")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junit5Version")
     testRuntime("org.junit.jupiter:junit-jupiter-engine:$junit5Version")
     testRuntime("org.junit.platform:junit-platform-launcher:1.4.2")
-    testImplementation("io.mockk:mockk:1.9.3")
 }
 
 repositories {
