@@ -11,7 +11,18 @@ It was mainly developed to be used in Gradle build scripts but it can be used in
 ### Include the Library in your Buildscript Dependencies
 
 You should include the following dependency into your build.gradle.kts file:
+```kotlin
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("cloud.rio:amazonas:0.1.0")
+    }
+}
+```
 
+NOTE: If you want to use a snapshot version, you have to add the Sonatype snapshots repository:
 ```kotlin
 buildscript {
     repositories {
@@ -20,13 +31,10 @@ buildscript {
         }
     }
     dependencies {
-        classpath("cloud.rio:amazonas:0.0.12-SNAPSHOT")
+        classpath("cloud.rio:amazonas:0.1.0-SNAPSHOT")
     }
 }
 ```
-
-NOTE: The library is not yet available on maven central.
-Therefore you have to add the Sonatype snapshots repository if you want to use a snapshot version.
 
 ### How to use the MFA Credentials Provider
 
