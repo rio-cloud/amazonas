@@ -1,3 +1,4 @@
+[![Maven Central](https://img.shields.io/maven-central/v/cloud.rio/amazonas.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22cloud.rio%22%20AND%20a:%22amazonas%22)
 [![Build Status](https://travis-ci.com/rio-cloud/amazonas.svg?branch=master)](https://travis-ci.com/rio-cloud/amazonas)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
