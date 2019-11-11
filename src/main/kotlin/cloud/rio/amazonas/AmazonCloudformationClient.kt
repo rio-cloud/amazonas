@@ -67,12 +67,13 @@ class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFo
     /**
      * Creates or updates the specified CloudFormation stackTemplate and waits for completion.
      *
-     * @param stackTemplate          the stackTemplate to be created or updated
-     * @param capability             the capability with with the stack should be deployed can be null,
-     *                               CAPABILITY_NAMED_IAM or CAPABILITY_IAM
-     * @param onCreationFailure      the action that should be taken if the stack creation fails can be DELETE or ROLLBACK
-     * @param sleepWhileWaitingInSec the number of seconds the waitForStack method should sleep before checking the
-     *                               stack status again
+     * @param stackTemplate               the stackTemplate to be created or updated
+     * @param capability                  the capability with with the stack should be deployed can be null,
+     *                                    CAPABILITY_NAMED_IAM or CAPABILITY_IAM
+     * @param onCreationFailure           the action that should be taken if the stack creation fails can be DELETE or ROLLBACK
+     * @param sleepWhileWaitingInSec      the number of seconds the waitForStack method should sleep before checking the
+     *                                    stack status again
+     * @param enableTerminationProtection enables termination protection for the cloudformation stack
      */
     fun createOrUpdateStackAndWait(
             stackTemplate: StackTemplate,
