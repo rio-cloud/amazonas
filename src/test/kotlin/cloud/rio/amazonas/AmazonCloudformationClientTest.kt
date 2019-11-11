@@ -35,6 +35,7 @@ internal class AmazonCloudformationClientTest {
     private val updateStackResultMock = mockkClass(UpdateStackResult::class)
     private val stackEventMock = mockkClass(StackEvent::class)
     private val stackMock = mockkClass(com.amazonaws.services.cloudformation.model.Stack::class)
+    private val updateTerminationProtectionResultMock = mockkClass((UpdateTerminationProtectionResult::class))
     private val stackId = "stack_id"
     private val stackTemplate = StackTemplate("TestStack", "https://Path.to.stack")
 
@@ -49,6 +50,11 @@ internal class AmazonCloudformationClientTest {
         every { amazonCloudFormationMock.describeStacks(DescribeStacksRequest().withStackName(stackTemplate.name)) } returns describeStackResultMock
         every { amazonCloudFormationMock.describeStackEvents(DescribeStackEventsRequest().withStackName("stack_id")).stackEvents } returns listOf(stackEventMock)
         every { amazonCloudFormationMock.deleteStack(DeleteStackRequest().withStackName(stackTemplate.name)) } returns deleteStackResultMock
+        every {
+            amazonCloudFormationMock.updateTerminationProtection(UpdateTerminationProtectionRequest()
+                    .withStackName(stackTemplate.name)
+                    .withEnableTerminationProtection(false))
+        } returns  updateTerminationProtectionResultMock
         every {
             amazonCloudFormationMock.createStack(CreateStackRequest()
                     .withStackName(stackTemplate.name)
@@ -203,6 +209,38 @@ internal class AmazonCloudformationClientTest {
                     .withOnFailure("DELETE")
                     .withCapabilities(Capability.CAPABILITY_NAMED_IAM)
                     .withTemplateURL(stackTemplate.templatePath))
+        }
+    }
+
+    @Test
+    fun `should create a stack with termination protection enabled`() {
+        every { stackMock.stackStatus } returnsMany listOf("CREATE_IN_PROGRESS", "CREATE_COMPLETE")
+        every { stackEventMock.resourceStatus } returnsMany listOf("CREATE_COMPLETE")
+        every {
+            amazonCloudFormationMock.describeStacks(DescribeStacksRequest().withStackName(stackTemplate.name))
+        } throws AmazonServiceException("This stack does not exist!") andThen describeStackResultMock
+        every {
+            amazonCloudFormationMock.updateTerminationProtection(UpdateTerminationProtectionRequest()
+                    .withStackName(stackTemplate.name)
+                    .withEnableTerminationProtection(true))
+        } returns  updateTerminationProtectionResultMock
+
+        val amazonCloudformationClient = AmazonCloudformationClient(amazonCloudFormationMock)
+        amazonCloudformationClient.createOrUpdateStackAndWait(stackTemplate, sleepWhileWaitingInSec = 1, enableTerminationProtection = true)
+
+        verify {
+            amazonCloudFormationMock.createStack(CreateStackRequest()
+                    .withStackName(stackTemplate.name)
+                    .withParameters(stackTemplate.parameters)
+                    .withTags(stackTemplate.tags)
+                    .withOnFailure("DELETE")
+                    .withCapabilities(Capability.CAPABILITY_NAMED_IAM)
+                    .withTemplateURL(stackTemplate.templatePath))
+        }
+        verify {
+            amazonCloudFormationMock.updateTerminationProtection(UpdateTerminationProtectionRequest()
+                    .withStackName(stackTemplate.name)
+                    .withEnableTerminationProtection(true))
         }
     }
 
