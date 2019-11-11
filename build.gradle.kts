@@ -2,7 +2,7 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.owasp.dependencycheck.reporting.ReportGenerator
 
-version = "0.1.1-SNAPSHOT"
+version = "0.1.2-SNAPSHOT"
 group = "cloud.rio"
 
 val awsSdkVersion = "1.11.671"
