@@ -244,4 +244,32 @@ internal class AmazonCloudformationClientTest {
         }
     }
 
+    @Test
+    fun `should update termination protection, event if the stack cannot be updated`() {
+        every { stackMock.stackStatus } returnsMany listOf("CREATE_COMPLETE", "CREATE_COMPLETE", "UPDATE_IN_PROGRESS", "UPDATE_COMPLETE")
+        every { stackEventMock.resourceStatus } returnsMany listOf("CREATE_COMPLETE")
+        every {
+            amazonCloudFormationMock.updateStack(UpdateStackRequest()
+                    .withStackName(stackTemplate.name)
+                    .withParameters(stackTemplate.parameters)
+                    .withTags(stackTemplate.tags)
+                    .withCapabilities(Capability.CAPABILITY_NAMED_IAM)
+                    .withTemplateURL(stackTemplate.templatePath))
+        } throws AmazonServiceException("No updates are to be performed.")
+        every {
+            amazonCloudFormationMock.updateTerminationProtection(UpdateTerminationProtectionRequest()
+                    .withStackName(stackTemplate.name)
+                    .withEnableTerminationProtection(true))
+        } returns updateTerminationProtectionResultMock
+
+        val amazonCloudformationClient = AmazonCloudformationClient(amazonCloudFormationMock)
+        amazonCloudformationClient.createOrUpdateStackAndWait(stackTemplate, sleepWhileWaitingInSec = 1, enableTerminationProtection = true)
+
+        verify {
+            amazonCloudFormationMock.updateTerminationProtection(UpdateTerminationProtectionRequest()
+                    .withStackName(stackTemplate.name)
+                    .withEnableTerminationProtection(true))
+        }
+    }
+
 }
