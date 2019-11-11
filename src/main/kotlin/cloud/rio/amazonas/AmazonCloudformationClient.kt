@@ -110,10 +110,10 @@ class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFo
 
     private fun updateStackAndWait(stackTemplate: StackTemplate, capability: String, loopWaitInSec: Int, enableTerminationProtection: Boolean) {
         LOGGER.info("Update stack: ${stackTemplate.name}")
+        updateTerminationProtection(stackTemplate.name, enableTerminationProtection)
         val updateStackResult = updateStack(stackTemplate, capability)
         LOGGER.info("Update requested: ${updateStackResult.stackId}")
         waitForStack(stackTemplate.name, updateStackResult.stackId, loopWaitInSec)
-        updateTerminationProtection(stackTemplate.name, enableTerminationProtection)
     }
 
     private fun createStackAndWait(stackTemplate: StackTemplate, capability: String, cfnOnFailure: String, loopWaitInSec: Int, enableTerminationProtection: Boolean) {
@@ -235,6 +235,7 @@ class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFo
                         .withStackName(stackName)
                         .withEnableTerminationProtection(enableTerminationProtection)
         )
+        LOGGER.info("Update termination protection for stack: $stackName to $enableTerminationProtection")
     }
 
     companion object {
