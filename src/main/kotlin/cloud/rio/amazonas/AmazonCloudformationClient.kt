@@ -233,8 +233,8 @@ class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFo
         amazonCloudFormation.updateTerminationProtection(
                 UpdateTerminationProtectionRequest()
                         .withStackName(stackName)
-                        .withEnableTerminationProtection(enableTerminationProtection))
-
+                        .withEnableTerminationProtection(enableTerminationProtection)
+        )
     }
 
     companion object {

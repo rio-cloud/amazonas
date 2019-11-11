@@ -54,7 +54,7 @@ internal class AmazonCloudformationClientTest {
             amazonCloudFormationMock.updateTerminationProtection(UpdateTerminationProtectionRequest()
                     .withStackName(stackTemplate.name)
                     .withEnableTerminationProtection(false))
-        } returns  updateTerminationProtectionResultMock
+        } returns updateTerminationProtectionResultMock
         every {
             amazonCloudFormationMock.createStack(CreateStackRequest()
                     .withStackName(stackTemplate.name)
@@ -223,7 +223,7 @@ internal class AmazonCloudformationClientTest {
             amazonCloudFormationMock.updateTerminationProtection(UpdateTerminationProtectionRequest()
                     .withStackName(stackTemplate.name)
                     .withEnableTerminationProtection(true))
-        } returns  updateTerminationProtectionResultMock
+        } returns updateTerminationProtectionResultMock
 
         val amazonCloudformationClient = AmazonCloudformationClient(amazonCloudFormationMock)
         amazonCloudformationClient.createOrUpdateStackAndWait(stackTemplate, sleepWhileWaitingInSec = 1, enableTerminationProtection = true)
