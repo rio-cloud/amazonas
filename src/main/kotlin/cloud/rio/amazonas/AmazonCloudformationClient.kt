@@ -78,7 +78,8 @@ class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFo
             stackTemplate: StackTemplate,
             capability: String = "CAPABILITY_NAMED_IAM",
             onCreationFailure: String = "DELETE",
-            sleepWhileWaitingInSec: Int = 10
+            sleepWhileWaitingInSec: Int = 10,
+            enableTerminationProtection: Boolean = false
     ) {
         try {
             val stack = amazonCloudFormation
@@ -86,13 +87,13 @@ class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFo
                     .stacks
                     .first()
             when {
-                stack.stackStatus == "DELETE_COMPLETE" -> deleteAndCreate(stackTemplate, capability, onCreationFailure, sleepWhileWaitingInSec)
-                stableStackStatuses.contains(stack.stackStatus) -> updateStackAndWait(stackTemplate, capability, sleepWhileWaitingInSec)
+                stack.stackStatus == "DELETE_COMPLETE" -> deleteAndCreate(stackTemplate, capability, onCreationFailure, sleepWhileWaitingInSec, enableTerminationProtection)
+                stableStackStatuses.contains(stack.stackStatus) -> updateStackAndWait(stackTemplate, capability, sleepWhileWaitingInSec, enableTerminationProtection)
                 else -> throw RuntimeException("Invalid status for update: ${stack.stackStatus}")
             }
         } catch (e: AmazonServiceException) {
             when {
-                e.message!!.contains("does not exist") -> createStackAndWait(stackTemplate, capability, onCreationFailure, sleepWhileWaitingInSec)
+                e.message!!.contains("does not exist") -> createStackAndWait(stackTemplate, capability, onCreationFailure, sleepWhileWaitingInSec, enableTerminationProtection)
                 e.message!!.contains("No updates are to be performed.") -> LOGGER.trace(e.message)
                 else -> throw e
             }
@@ -100,24 +101,27 @@ class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFo
 
     }
 
-    private fun deleteAndCreate(stackTemplate: StackTemplate, capability: String, onCreationFailure: String, loopWaitInSec: Int) {
+    private fun deleteAndCreate(stackTemplate: StackTemplate, capability: String, onCreationFailure: String, loopWaitInSec: Int, enableTerminationProtection: Boolean) {
         LOGGER.info("Deleting stack: ${stackTemplate.name} before it can be created.")
         deleteStackAndWait(stackTemplate.name)
-        createStackAndWait(stackTemplate, capability, onCreationFailure, loopWaitInSec)
+        createStackAndWait(stackTemplate, capability, onCreationFailure, loopWaitInSec, enableTerminationProtection)
+        updateTerminationProtection(stackTemplate.name, enableTerminationProtection)
     }
 
-    private fun updateStackAndWait(stackTemplate: StackTemplate, capability: String, loopWaitInSec: Int) {
+    private fun updateStackAndWait(stackTemplate: StackTemplate, capability: String, loopWaitInSec: Int, enableTerminationProtection: Boolean) {
         LOGGER.info("Update stack: ${stackTemplate.name}")
         val updateStackResult = updateStack(stackTemplate, capability)
         LOGGER.info("Update requested: ${updateStackResult.stackId}")
         waitForStack(stackTemplate.name, updateStackResult.stackId, loopWaitInSec)
+        updateTerminationProtection(stackTemplate.name, enableTerminationProtection)
     }
 
-    private fun createStackAndWait(stackTemplate: StackTemplate, capability: String, cfnOnFailure: String, loopWaitInSec: Int) {
+    private fun createStackAndWait(stackTemplate: StackTemplate, capability: String, cfnOnFailure: String, loopWaitInSec: Int, enableTerminationProtection: Boolean) {
         LOGGER.info("Create stack: ${stackTemplate.name}")
         val createStackResult = createStack(stackTemplate, capability, cfnOnFailure)
         LOGGER.info("Create requested: ${createStackResult.stackId}")
         waitForStack(stackTemplate.name, createStackResult.stackId, loopWaitInSec)
+        updateTerminationProtection(stackTemplate.name, enableTerminationProtection)
     }
 
     private fun deleteStackAndWait(stackName: String): DeleteStackResult {
@@ -223,6 +227,14 @@ class AmazonCloudformationClient(private val amazonCloudFormation: AmazonCloudFo
         if (stackEvent != null) throw RuntimeException(
                 "Status of stack $stackName was ${stackEvent.resourceStatus}. Reason: ${stackEvent.resourceStatusReason}"
         )
+    }
+
+    private fun updateTerminationProtection(stackName: String, enableTerminationProtection: Boolean) {
+        amazonCloudFormation.updateTerminationProtection(
+                UpdateTerminationProtectionRequest()
+                        .withStackName(stackName)
+                        .withEnableTerminationProtection(enableTerminationProtection))
+
     }
 
     companion object {
