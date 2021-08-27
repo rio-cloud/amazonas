@@ -2,12 +2,12 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.owasp.dependencycheck.reporting.ReportGenerator
 
-version = "0.1.2-SNAPSHOT"
+version = "0.1.3-SNAPSHOT"
 group = "cloud.rio"
 
-val awsSdkVersion = "1.11.671"
-val log4jVersion = "2.12.1"
-val jacksonVersion = "2.10.1"
+val awsSdkVersion = "1.12.56"
+val log4jVersion = "2.14.1"
+val jacksonVersion = "2.12.5"
 
 val repositoryUser: String by project
 val repositoryPassword: String by project
@@ -19,17 +19,17 @@ plugins {
     java
     signing
     `maven-publish`
-    kotlin("jvm") version "1.3.50"
-    id("com.github.ben-manes.versions") version "0.27.0"
-    id("org.owasp.dependencycheck") version "5.2.2"
+    kotlin("jvm") version "1.5.30"
+    id("com.github.ben-manes.versions") version "0.39.0"
+    id("org.owasp.dependencycheck") version "6.2.2"
 }
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
-    implementation("com.google.code.gson:gson:2.8.6")
-    implementation("org.apache.commons:commons-io:1.3.2")
+    implementation("com.google.code.gson:gson:2.8.8")
+    implementation("commons-io:commons-io:2.11.0")
     implementation("com.amazonaws:aws-java-sdk-cloudformation:$awsSdkVersion")
     implementation("com.amazonaws:aws-java-sdk-codepipeline:$awsSdkVersion")
     implementation("com.amazonaws:aws-java-sdk-sts:$awsSdkVersion")
@@ -40,16 +40,14 @@ dependencies {
     implementation("com.amazonaws:aws-java-sdk-ssm:$awsSdkVersion")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    testImplementation("io.mockk:mockk:1.9.3")
-    testImplementation("io.findify:s3mock_2.12:0.2.5")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
+    testImplementation("io.mockk:mockk:1.12.0")
+    testImplementation("io.findify:s3mock_2.12:0.2.6")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.7.2")
 }
 
 repositories {
     mavenCentral()
 }
-
-tasks.getByName<Wrapper>("wrapper").gradleVersion = "5.4"
 
 tasks.withType<Test> {
     useJUnitPlatform()
@@ -92,12 +90,12 @@ tasks {
     }
 
     dependencyCheck {
-        data {
-            directory = "owasp-dependency-check/database"
-        }
+        data(closureOf<org.owasp.dependencycheck.gradle.extension.DataExtension> {
+            directory = "${project.rootDir}/owasp-dependency-check/database"
+        })
         failBuildOnCVSS = 0f
         format = ReportGenerator.Format.ALL
-        suppressionFile = "owasp-dependency-check/suppressions.xml"
+        suppressionFile = "${project.rootDir}/owasp-dependency-check/suppressions.xml"
         cveValidForHours = 24 * 7
     }
 }
